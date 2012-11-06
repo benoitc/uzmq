@@ -131,7 +131,6 @@ class ZMQPoll(object):
         try:
             results = self._poller.poll(100)
         except Exception as e:
-            print(e)
             if (getattr(e, 'errno', None) == errno.EINTR or
                     (isinstance(getattr(e, 'args', None), tuple) and
                      len(e.args) == 2 and e.args[0] == errno.EINTR)):
@@ -140,24 +139,19 @@ class ZMQPoll(object):
             self.close()
             self._callback(self, 0, e.errno)
 
-
-        print(results)
         for fd, z_events in results:
             events = 0
             if z_events & zmq.POLLIN:
                 events |= pyuv.UV_READABLE
-                print("read")
 
             if z_events & zmq.POLLOUT:
                 events |= pyuv.UV_WRITABLE
-                print("write")
 
             try:
                 self._callback(self, events, None)
             except (OSError, IOError) as e:
                 if e.args[0] == errno.EPIPE:
                     # Happens when the client closes the connection
-                    print("fuck")
                     pass
                 else:
                     logging.error("Exception in I/O handler for fd %s",
@@ -166,4 +160,3 @@ class ZMQPoll(object):
             except Exception:
                     logging.error("Exception in I/O handler for fd %s",
                                   fd, exc_info=True)
-
