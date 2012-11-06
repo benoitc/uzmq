@@ -16,8 +16,6 @@ class ZMQ(object):
     def __init__(self, loop, socket):
         self.loop = loop
         self.socket = socket
-        self.active = False
-        self.closed = True
 
         # shortcircuit some socket methods
         self.bind = self.socket.bind
@@ -57,11 +55,12 @@ class ZMQ(object):
         if not six.callable(callback):
             raise TypeError("a callable is required")
 
+        self._read_cb = callback
+        self._read_copy = copy
+
         if not self._events & pyuv.UV_READABLE:
             self._events |= pyuv.UV_READABLE
             self._poll.start(self._events, self._on_events)
-        self._read_cb = callback
-        self._read_copy = copy
 
 
     def stop_read(self):
@@ -77,7 +76,7 @@ class ZMQ(object):
             callback=None):
 
         kwargs = dict(flags=flags, copy=copy, track=track)
-        self._send_queue.put((msg, kwargs, callback))
+        self._send_queue.append((msg, kwargs, callback))
 
         if not self._events & pyuv.UV_WRITABLE:
             self._events |= pyuv.UV_WRITABLE
@@ -98,7 +97,8 @@ class ZMQ(object):
                     break
 
     def _send(self):
-        (msg, kwargs, cb) = self._send_queue.popleft()
+        res = self._send_queue.popleft()
+        msg, kwargs, cb = res
         try:
             status = self.socket.send_multipart(msg, **kwargs)
         except zmq.ZMQError as e:
@@ -108,16 +108,15 @@ class ZMQ(object):
         if six.callable(cb):
             cb(self, msg, status)
 
-
     def _on_events(self, handle, events, err):
         if events & pyuv.UV_READABLE:
             self._on_read()
 
-        if events & pyuv.UV_WRITEABLE:
+        if events & pyuv.UV_WRITABLE:
             self._on_write()
 
     def _on_read(self):
-        if self.closed or not self.active:
+        if not self._poll.active:
             return
 
         try:

@@ -25,15 +25,60 @@ class TestZMQStream(BaseZMQTestCase):
 
         r = []
         def cb(stream, msg, err):
+            print("got %s" % msg)
             r.append(msg[0])
 
         s.start_read(cb)
         req.send(b'test')
+        wait()
 
         def stop(handle):
             s.stop()
 
         t = pyuv.Timer(loop)
-        t.start(stop, 0.2, 0.0)
+        t.start(stop, 0.8, 0.0)
 
         loop.run()
+        assert r == [b'test']
+
+    def test_echo(self):
+        req, rep = self.create_bound_pair(zmq.REQ, zmq.REP)
+        wait()
+
+        loop = pyuv.Loop.default_loop()
+        s = ZMQ(loop, rep)
+        s1 = ZMQ(loop, req)
+
+        r = []
+        def cb(stream, msg, err):
+            print("got %s" % msg)
+            r.append(msg[0])
+            stream.write(msg[0])
+            print("i was supposed to send")
+            #s.stop()
+
+        r1 = []
+        def cb1(stream, msg, err):
+            print("got 1 %s" % msg)
+            r1.append(msg[0])
+            s.stop()
+            s1.stop()
+
+        s.start_read(cb)
+        s1.start_read(cb1)
+        s1.write(b'echo')
+
+        def stop(handle):
+            s.close()
+            s1.close()
+
+        #t = pyuv.Timer(loop)
+        #t.start(stop, 1.0, 0.0)
+
+
+        loop.run()
+
+        assert r == [b'echo']
+        assert r1 == [b'echo']
+
+
