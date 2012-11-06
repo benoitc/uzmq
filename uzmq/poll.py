@@ -54,9 +54,13 @@ class ZMQPoll(object):
 
         # initialize private variable
         self._poller = zmq.Poller()
-        self._timer = pyuv.Timer(loop)
+        self._prepare = pyuv.Prepare(loop)
+        self._check = pyuv.Check(loop)
+        self._waker = pyuv.Idle(loop)
+
         self._callback = None
         self._started = False
+
 
 
     def start(self, events, callback):
@@ -91,12 +95,17 @@ class ZMQPoll(object):
             self._poller.modify(self.socket, z_events)
         else:
             self._poller.register(self.socket, z_events)
-            self._timer.start(self._poll, 0.1, 0.1)
+            self._prepare.start(self._poll)
+            self._check.start(self._poll)
+            self._waker.start(lambda x: None)
+            self._waker.unref()
             self._started = True
+
 
     def stop(self):
         """ Stop the ``Poll`` handle. """
-        self._timer.stop()
+        self._check.stop()
+        self._prepare.stop()
         self.active = False
 
     def close(self, callback=None):
@@ -111,14 +120,16 @@ class ZMQPoll(object):
         self.active = False
         self.closed = True
         self._poller.unregister(self.socket)
-        self._timer.close()
+        self._check.close()
+        self._prepare.close()
+        self._waker.close()
         self._started = False
         if six.callable(callback):
             callback(self)
 
     def _poll(self, handle):
         try:
-            results = self._poller.poll(0)
+            results = self._poller.poll(100)
         except Exception as e:
             print(e)
             if (getattr(e, 'errno', None) == errno.EINTR or
