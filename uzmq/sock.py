@@ -12,8 +12,8 @@ from .poll import ZMQPoll
 
 class ZMQ(object):
 
-    def __init__(self, socket, loop=None):
-        self.loop = loop or pyuv.Loop()
+    def __init__(self, loop, socket):
+        self.loop = loop
         self.socket = socket
         self.active = False
         self.closed = True
