@@ -6,9 +6,6 @@
 ZMQPoll: ZMQ Poll handle
 
 """
-import errno
-import logging
-
 import pyuv
 import six
 import zmq
@@ -76,16 +73,11 @@ class ZMQPoll(object):
         Callback signature: ``callback(poll_handle, events,
         errorno)``.
         """
-
-
         if not six.callable(callback):
             raise TypeError("a callable is required")
 
-
         self._callback = callback
         self._poller.start(events, self._poll)
-
-
 
     def stop(self):
         """ Stop the ``Poll`` handle. """
@@ -103,11 +95,10 @@ class ZMQPoll(object):
         if six.callable(callback):
             callback(self)
 
-
     def _poll(self, handle, evs, errno):
+        # trick to use the last state. Fix a race condition
         z_events = self.socket.getsockopt(zmq.EVENTS)
 
-        print(z_events)
         events = 0
         if z_events & zmq.POLLIN:
             events |= pyuv.UV_READABLE

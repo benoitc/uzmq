@@ -3,6 +3,7 @@
 # This file is part of zmq. See the NOTICE for more information.
 
 from collections import deque
+import logging
 
 import pyuv
 import six
@@ -28,7 +29,7 @@ class ZMQ(object):
         self.setsockopt_unicode = self.socket.setsockopt_unicode
         self.getsockopt_unicode = self.socket.getsockopt_unicode
 
-        self._poll = Poll(loop, socket)
+        self._poll = ZMQPoll(loop, socket)
         self._events = 0
 
         self._send_queue = deque()
@@ -40,8 +41,7 @@ class ZMQ(object):
         if six.callable(callback):
             callback(self)
 
-
-    def start_read(self, callbacki, copy=True):
+    def start_read(self, callback, copy=True):
         """
         :param callback: callable
             callback must take exactly one argument, which will be a
@@ -119,7 +119,7 @@ class ZMQ(object):
 
         try:
             msg = self.socket.recv_multipart(zmq.NOBLOCK,
-                    copy=self._read_copu)
+                    copy=self._read_copy)
         except zmq.ZMQError as e:
             if e.errno == zmq.EAGAIN:
                 # state changed since poll event
