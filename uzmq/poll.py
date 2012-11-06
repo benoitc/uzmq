@@ -118,7 +118,7 @@ class ZMQPoll(object):
 
     def _poll(self, handle):
         try:
-            results = self._poller.poll(100)
+            results = self._poller.poll(0)
         except Exception as e:
             print(e)
             if (getattr(e, 'errno', None) == errno.EINTR or
