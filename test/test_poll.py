@@ -1,19 +1,6 @@
-#-----------------------------------------------------------------------------
-#  Copyright (c) 2010-2012 Brian Granger, Min Ragan-Kelley
+# -*- coding: utf-8 -
 #
-#  This file is part of pyzmq
-#
-#  Distributed under the terms of the New BSD License.  The full license is in
-#  the file COPYING.BSD, distributed as part of this software.
-#-----------------------------------------------------------------------------
-
-#-----------------------------------------------------------------------------
-# Imports
-#-----------------------------------------------------------------------------
-
-import time
-import os
-import threading
+# This file is part of gaffer. See the NOTICE for more information.
 
 import pyuv
 import zmq
@@ -21,10 +8,6 @@ from zmq.tests import BaseZMQTestCase
 
 from uzmq import ZMQPoll
 
-
-#-----------------------------------------------------------------------------
-# Tests
-#-----------------------------------------------------------------------------
 
 class TestPoll(BaseZMQTestCase):
 
