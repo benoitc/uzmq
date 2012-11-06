@@ -59,14 +59,14 @@ class ZMQ(object):
 
         if not self._events & pyuv.UV_READABLE:
             self._events |= pyuv.UV_READABLE
-            self._poll.start(self._events, self._on_event)
+            self._poll.start(self._events, self._on_events)
         self._read_cb = callback
         self._read_copy = copy
 
 
     def stop_read(self):
         self._events = self._events & (~pyuv.UV_READABLE)
-        self._poll.start(self._events, self._on_event)
+        self._poll.start(self._events, self._on_events)
 
     def write(self, msg, flags=0, copy=True, track=False,
             callback=None):
@@ -81,7 +81,10 @@ class ZMQ(object):
 
         if not self._events & pyuv.UV_WRITABLE:
             self._events |= pyuv.UV_WRITABLE
-            self._poll.start(self._events, self._on_event)
+            self._poll.start(self._events, self._on_events)
+
+    def stop(self):
+        self._poll.stop()
 
     def close(self):
         self._poll.close()
