@@ -10,8 +10,8 @@ Features
 --------
 
 - Simple interface to zeromq with the libuv event loop
-- :doc:`poll`:  Poll handle
-- :doc:`zmq`: ZMQ handle
+- Poll handle
+- ZMQ handle
 
 Documentation
 -------------
