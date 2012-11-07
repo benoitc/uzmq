@@ -57,6 +57,7 @@ setup(name='uzmq',
       packages=find_packages(),
       install_requires = [
           'pyuv>=0.8.3',
-          'pyzmq'
+          'pyzmq',
+          'six'
       ],
       data_files = DATA_FILES)
