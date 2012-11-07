@@ -2,3 +2,51 @@ uzmq
 ====
 
 libuv interface for ZeroMQ.
+
+With uzmq you can use `zmq <http://zeromq.org>`_ sockets with the libuv
+event loop binding proposed by the `pyuv library <http://pyuv.readthedocs.org>`_.
+
+Features
+--------
+
+- Simple interface to zeromq with the libuv event loop
+- :doc:`poll`:  Poll handle
+- :doc:`zmq`: ZMQ handle
+
+Documentation
+-------------
+
+http://uzmq.readthedocs.org
+
+Installation
+------------
+
+uzmq requires Python superior to 2.6 (yes Python 3 is supported)
+
+To install gaffer using pip you must make sure you have a
+recent version of distribute installed::
+
+    $ curl -O http://python-distribute.org/distribute_setup.py
+    $ sudo python distribute_setup.py
+    $ easy_install pip
+
+
+To install from source, run the following command::
+
+    $ git clone https://github.com/benoitc/uzmq.git
+    $ cd gaffer && pip install -r requirements.txt
+
+
+From pypi::
+
+    $ pip install uzmq
+
+
+License
+-------
+
+uzmq is available in the public domain (see UNLICENSE). gaffer is also
+optionally available under the MIT License (see LICENSE), meant
+especially for jurisdictions that do not recognize public domain
+works.
+

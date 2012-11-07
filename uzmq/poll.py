@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of gaffer. See the NOTICE for more information.
+# This file is part of uzmq. See the NOTICE for more information.
 
 """
 ZMQPoll: ZMQ Poll handle
@@ -11,12 +11,11 @@ import six
 import zmq
 
 class ZMQPoll(object):
-
-    def __init__(self, loop, socket):
-        """
+    """\
         :param loop: loop object where this handle runs (accessible
-        through :py:attr:`Poll.loop`).  :param int fd: File descriptor
-        to be monitored for readibility or writability.
+            through :py:attr:`Poll.loop`).
+        :param int socket: zmq socket
+            to be monitored for readibility or writability.
 
         ``ZMQPoll`` ZMQPoll handles can be used to monitor an arbitrary file
         descritor for readability or writability.  On Unix any file
@@ -29,19 +28,11 @@ class ZMQPoll(object):
 
             :py:class:`pyuv.Loop` object where this handle runs.
 
-        .. py:attribute:: active
+    """
 
-            *Read only*
+    def __init__(self, loop, socket):
 
-            Indicates if this handle is active.
 
-        .. py:attribute:: closed
-
-            *Read only*
-
-            Indicates if this handle is closing or already closed.
-
-        """
         self.loop = loop
         self.socket = socket
 
@@ -54,24 +45,28 @@ class ZMQPoll(object):
 
     @property
     def active(self):
+        """*Read only*
+
+            Indicates if this handle is active."""
         return self._poller.active
 
     @property
     def closed(self):
+        """*Read only*
+
+            Indicates if this handle is closing or already closed."""
         return self._poller.closed
 
     def start(self, events, callback):
-        """
-        :param int events: Mask of events that will be detected. The
-        possible events are `pyuv.UV_READABLE` or `pyuv.UV_WRITABLE`.
+        """\
+            :param int events: Mask of events that will be detected. The
+            possible events are `pyuv.UV_READABLE` or `pyuv.UV_WRITABLE`.
+            :param callable callback: Function that will be called when
+            the ``Poll`` handle receives events.
 
-        :param callable callback: Function that will be called when the
-        ``Poll`` handle receives events.
+            Start or update the event mask of the ``ZMQPoll`` handle.
 
-        Start or update the event mask of the ``ZMQPoll`` handle.
-
-        Callback signature: ``callback(poll_handle, events,
-        errorno)``.
+            Callback signature: ``callback(poll_handle, events, errorno)``.
         """
         if not six.callable(callback):
             raise TypeError("a callable is required")
