@@ -67,10 +67,9 @@ class ZMQPoll(object):
                 Function that will be called when the ``Poll`` handle
                 receives events.
 
+            Callback signature: ``callback(poll_handle, events, errorno)``.
 
             Start or update the event mask of the ``ZMQPoll`` handle.
-
-            Callback signature: ``callback(poll_handle, events, errorno)``.
         """
         if not six.callable(callback):
             raise TypeError("a callable is required")
