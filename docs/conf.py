@@ -14,6 +14,13 @@
 
 import sys, os
 
+import uzmq
+
+CURDIR = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(os.path.join(CURDIR, '..', '..'))
+sys.path.append(os.path.join(CURDIR, '..'))
+sys.path.append(os.path.join(CURDIR, '.'))
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -49,7 +56,7 @@ copyright = '2012, Author'
 # built documents.
 #
 # The short X.Y version.
-version = ''
+version = "%s.%s" % (uzmq.version_info[0], uzmq.version_info[1])
 # The full version, including alpha/beta/rc tags.
 release = ''
 
