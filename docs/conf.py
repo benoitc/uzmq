@@ -14,6 +14,8 @@
 
 import sys, os
 
+import sys
+
 class Mock(object):
     def __init__(self, *args, **kwargs):
         pass
@@ -22,16 +24,19 @@ class Mock(object):
         return Mock()
 
     @classmethod
-    def __getattr__(self, name):
+    def __getattr__(cls, name):
         if name in ('__file__', '__path__'):
             return '/dev/null'
         elif name[0] == name[0].upper():
-            return type(name, (), {})
-
-        return Mock()
-
+            mockType = type(name, (), {})
+            mockType.__module__ = __name__
+            return mockType
+        else:
+            return Mock()
 
 MOCK_MODULES = ['zmq']
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = Mock()
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 skip_coverage = os.environ.get('SKIP_COVERAGE', None) == 'True'

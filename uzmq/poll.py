@@ -33,8 +33,6 @@ class ZMQPoll(object):
     """
 
     def __init__(self, loop, socket):
-
-
         self.loop = loop
         self.socket = socket
 
