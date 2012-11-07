@@ -84,6 +84,7 @@ Contents:
    :maxdepth: 4
 
    api
+   news
 
 
 Indices and tables
