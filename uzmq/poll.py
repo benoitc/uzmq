@@ -59,10 +59,14 @@ class ZMQPoll(object):
 
     def start(self, events, callback):
         """\
-            :param int events: Mask of events that will be detected. The
-            possible events are `pyuv.UV_READABLE` or `pyuv.UV_WRITABLE`.
-            :param callable callback: Function that will be called when
-            the ``Poll`` handle receives events.
+            :param events: int
+                Mask of events that will be detected. The possible
+                events are `pyuv.UV_READABLE` or `pyuv.UV_WRITABLE`.
+
+            :param callback: callable
+                Function that will be called when the ``Poll`` handle
+                receives events.
+
 
             Start or update the event mask of the ``ZMQPoll`` handle.
 
