@@ -18,7 +18,7 @@ stream = uzmq.ZMQ(loop, s)
 
 def echo(handle, msg, err):
     print " ".join(msg)
-    stream.send_multipart(msg)
+    stream.write_multipart(msg)
 
 stream.start_read(echo)
 

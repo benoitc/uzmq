@@ -76,7 +76,7 @@ The same but using a ZMQ handle::
 
     def echo(handle, msg, err):
         print " ".join(msg)
-        stream.send_multipart(msg)
+        stream.write_multipart(msg)
 
     stream.start_read(echo)
 
