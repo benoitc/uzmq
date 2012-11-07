@@ -15,7 +15,3 @@ __version__ = ".".join(map(str, version_info))
 
 from uzmq.poll import ZMQPoll
 from uzmq.sock import ZMQ
-
-
-
-

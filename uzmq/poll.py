@@ -18,10 +18,8 @@ class ZMQPoll(object):
         :param int socket: zmq socket
             to be monitored for readibility or writability.
 
-        ``ZMQPoll`` ZMQPoll handles can be used to monitor an arbitrary file
-        descritor for readability or writability.  On Unix any file
-        descriptor is supported but on Windows only sockets are
-        supported.
+        ``ZMQPoll`` ZMQPoll handles can be used to monitor any ZMQ
+        sockets for readability or writability.
 
         .. py:attribute:: loop
 

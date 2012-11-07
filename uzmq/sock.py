@@ -16,7 +16,6 @@ class ZMQ(object):
         :param loop: loop object where this handle runs (accessible
             through :py:attr:`Poll.loop`).
         :param int socket: zmq socket
-            to be monitored for readibility or writability.
 
         The ZMQ handles provides qsynchronous ZMQ sockets functionnality
         both for bound and connected sockets.

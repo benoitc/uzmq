@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of gaffer. See the NOTICE for more information.
+# This file is part of uzmq. See the NOTICE for more information.
 
 import pyuv
 import zmq
