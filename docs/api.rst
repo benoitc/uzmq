@@ -1,5 +1,5 @@
-Contents:
----------
+API
+---
 
 .. toctree::
    :titlesonly:
