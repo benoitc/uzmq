@@ -6,7 +6,6 @@ from collections import deque
 import logging
 
 import pyuv
-import six
 import zmq
 
 from .poll import ZMQPoll

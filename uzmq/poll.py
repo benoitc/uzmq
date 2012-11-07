@@ -9,7 +9,6 @@ ZMQPoll: ZMQ Poll handle
 import pyuv
 import zmq
 
-
 from . import util
 
 class ZMQPoll(object):
