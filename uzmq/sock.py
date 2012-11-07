@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of zmq. See the NOTICE for more information.
+# This file is part of uzmq. See the NOTICE for more information.
 
 from collections import deque
 import logging
@@ -10,6 +10,7 @@ import six
 import zmq
 
 from .poll import ZMQPoll
+from . import util
 
 class ZMQ(object):
     """\
@@ -51,7 +52,7 @@ class ZMQ(object):
         """
         :param callback: callable
             callback must take exactly one argument, which will be a
-            list, as returned by socket.recv_multipart()
+            /iist, as returned by socket.recv_multipart()
             if callback is None, recv callbacks are disabled.
         :param copy: bool
             copy is passed directly to recv, so if copy is False,
@@ -65,7 +66,7 @@ class ZMQ(object):
 
         Start reading for incoming messages from the remote endpoint.
         """
-        if not six.callable(callback):
+        if not util.is_callable(callback):
             raise TypeError("a callable is required")
 
         self._read_cb = callback
@@ -162,7 +163,7 @@ class ZMQ(object):
             logging.error("SEND Error: %s", e)
             status = e
 
-        if six.callable(cb):
+        if util.is_callable(cb):
             cb(self, msg, status)
 
     def _on_events(self, handle, events, err):

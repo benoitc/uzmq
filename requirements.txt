@@ -1,3 +1,2 @@
 pyuv>=0.8.3
 pyzmq
-six

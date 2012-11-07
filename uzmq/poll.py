@@ -7,8 +7,10 @@ ZMQPoll: ZMQ Poll handle
 
 """
 import pyuv
-import six
 import zmq
+
+
+from . import util
 
 class ZMQPoll(object):
     """\
@@ -71,7 +73,7 @@ class ZMQPoll(object):
 
             Start or update the event mask of the ``ZMQPoll`` handle.
         """
-        if not six.callable(callback):
+        if not util.is_callable(callback):
             raise TypeError("a callable is required")
 
         self._callback = callback
@@ -90,7 +92,7 @@ class ZMQPoll(object):
         operations can be performed on it.
         """
         self._poller.close()
-        if six.callable(callback):
+        if util.is_callable(callback):
             callback(self)
 
     def _poll(self, handle, evs, errno):
