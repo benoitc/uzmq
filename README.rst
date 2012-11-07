@@ -1,7 +1,7 @@
 uzmq
 ====
 
-libuv interface for ZeroMQ.
+libuv interface for ZeroMQ for your Python programs.
 
 With uzmq you can use `zmq <http://zeromq.org>`_ sockets with the libuv
 event loop binding proposed by the `pyuv library <http://pyuv.readthedocs.org>`_.
