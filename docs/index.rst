@@ -12,7 +12,11 @@ uzmq
 libuv interface for ZeroMQ.
 
 With uzmq you can use `zmq <http://zeromq.org>`_ sockets with the libuv
-event loop binding proposed by the `pyuv library <http://pyuv.readthedocs.org>`_.
+event loop binding proposed by the `pyuv library <http://pyuv.readthedocs.org>`_
+
+.. image:: https://secure.travis-ci.org/benoitc/uzmq.png?branch=master
+   :alt: Build Status
+   :target: https://secure.travis-ci.org/benoitc/uzmq
 
 Features
 --------
