@@ -1,5 +1,5 @@
-:mod:`poll` Module
-------------------
+ZMQPoll handle
+--------------
 
 .. automodule:: uzmq.poll
     :members:

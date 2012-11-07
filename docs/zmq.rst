@@ -1,5 +1,5 @@
-:mod:`sock` Module
-------------------
+ZMQ handle
+----------
 
 .. automodule:: uzmq.sock
     :members:
