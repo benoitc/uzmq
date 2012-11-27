@@ -3,6 +3,7 @@
 # This file is part of uzmq. See the NOTICE for more information.
 
 import sys
+import types
 
 # True if we are running on Python 3.
 PY3 = sys.version_info[0] == 3
