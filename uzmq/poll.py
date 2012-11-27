@@ -39,6 +39,7 @@ class ZMQPoll(object):
 
         self._callback = None
         self._started = False
+        self._events = 0
 
     @property
     def active(self):
@@ -72,7 +73,10 @@ class ZMQPoll(object):
             raise TypeError("a callable is required")
 
         self._callback = callback
-        self._poller.start(events, self._poll)
+        self._events = events
+
+        evs = pyuv.UV_READABLE | pyuv.UV_WRITABLE
+        self._poller.start(evs, self._poll)
 
     def stop(self):
         """ Stop the ``Poll`` handle. """
@@ -94,6 +98,9 @@ class ZMQPoll(object):
         # trick to use the last state. Fix a race condition
         z_events = self.socket.getsockopt(zmq.EVENTS)
 
+        if not z_events:
+            return
+
         events = 0
         if z_events & zmq.POLLIN:
             events |= pyuv.UV_READABLE
@@ -101,7 +108,5 @@ class ZMQPoll(object):
         if z_events & zmq.POLLOUT:
             events |= pyuv.UV_WRITABLE
 
-        if not events:
-            self._callback(self, evs, errno)
-        else:
+        if events & self._events:
             self._callback(self, events, errno)
