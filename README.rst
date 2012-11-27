@@ -27,7 +27,7 @@ Installation
 
 uzmq requires Python superior to 2.6 (yes Python 3 is supported)
 
-To install gaffer using pip you must make sure you have a
+To install uzmq using pip you must make sure you have a
 recent version of distribute installed::
 
     $ curl -O http://python-distribute.org/distribute_setup.py
