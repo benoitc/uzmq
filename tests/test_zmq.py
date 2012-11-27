@@ -68,3 +68,47 @@ class TestZMQStream(BaseZMQTestCase):
         assert r1 == [b'echo']
 
 
+
+    def test_pubsub(self):
+        pub, sub = self.create_bound_pair(zmq.PUB, zmq.SUB)
+        sub.setsockopt(zmq.SUBSCRIBE,b'')
+        wait()
+
+        loop = pyuv.Loop.default_loop()
+        s = ZMQ(loop, sub)
+        s1 = ZMQ(loop, pub)
+
+        r = []
+        def cb(stream, msg, err):
+            r.append(msg[0])
+            s.stop()
+            s1.stop()
+
+        s.start_read(cb)
+        s1.write(b"message")
+
+        loop.run()
+        assert r == [b'message']
+
+    def test_pubsub_topic(self):
+        pub, sub = self.create_bound_pair(zmq.PUB, zmq.SUB)
+        sub.setsockopt(zmq.SUBSCRIBE,b'x')
+        wait()
+
+        loop = pyuv.Loop.default_loop()
+        s = ZMQ(loop, sub)
+        s1 = ZMQ(loop, pub)
+
+        r = []
+        def cb(stream, msg, err):
+            r.append(msg[0])
+            s.stop()
+            s1.stop()
+
+        s.start_read(cb)
+        s1.write(b"message")
+        s1.write(b"xmessage")
+
+
+        loop.run()
+        assert r == [b'xmessage']
