@@ -75,12 +75,12 @@ The same but using a ZMQ handle::
     stream = uzmq.ZMQ(loop, s)
 
     def echo(handle, msg, err):
-        print " ".join(msg)
+        print(msg[0])
         stream.write_multipart(msg)
 
     stream.start_read(echo)
 
-loop.run()
+    loop.run()
 
 Contents:
 
