@@ -46,8 +46,8 @@ class TestPoll(BaseZMQTestCase):
         wait()
 
         loop = pyuv.Loop.default_loop()
-        poll = ZMQPoll(loop, req)
-        poll1 = ZMQPoll(loop, rep)
+        poll = ZMQPoll(loop, rep)
+        poll1 = ZMQPoll(loop, req)
 
         r = []
         def cb(handle, ev, error):
@@ -56,9 +56,10 @@ class TestPoll(BaseZMQTestCase):
             handle.close()
 
         def cb1(handle, ev, error):
-            handle.stop()
+
             r.append(ev & pyuv.UV_WRITABLE)
             req.send(b'req')
+            handle.stop()
 
         poll.start(pyuv.UV_READABLE, cb)
         poll1.start(pyuv.UV_WRITABLE, cb1)
