@@ -10,16 +10,19 @@ import uzmq
 loop = pyuv.Loop.default_loop()
 
 ctx = zmq.Context()
-s = ctx.socket(zmq.REP)
-s.bind('tcp://127.0.0.1:5555')
+s = ctx.socket(zmq.REQ)
+s.connect('tcp://127.0.0.1:5555')
 
+
+def display(handle, msg, err):
+    print(msg[0])
 
 stream = uzmq.ZMQ(loop, s)
+stream.start_read(display)
 
-def echo(handle, msg, err):
-    print(msg[0])
-    stream.write_multipart(msg)
-
-stream.start_read(echo)
+for i in range(10):
+    stream.write("echo %s" % i)
 
 loop.run()
+
+
