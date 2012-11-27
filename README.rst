@@ -38,7 +38,7 @@ recent version of distribute installed::
 To install from source, run the following command::
 
     $ git clone https://github.com/benoitc/uzmq.git
-    $ cd gaffer && pip install -r requirements.txt
+    $ cd uzmq && pip install -r requirements.txt
 
 
 From pypi::
