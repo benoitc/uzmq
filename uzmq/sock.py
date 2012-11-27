@@ -121,6 +121,8 @@ class ZMQ(object):
             Send a multipart message. See zmq.socket.send_multipart for
             details."""
 
+        # make sure we are sending bytes
+        msg = [util.to_bytes(m) for m in msg]
 
         kwargs = dict(flags=flags, copy=copy, track=track)
         self._send_queue.append((msg, kwargs, callback))
