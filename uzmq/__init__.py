@@ -10,8 +10,8 @@ Classes
 
 """
 
-version_info = (0, 1, 1)
-__version__ = ".".join(map(str, version_info))
+version_info = (0, 2, 0)
+__version__ = ".".join([str(v) for v in version_info])
 
 from uzmq.poll import ZMQPoll
 from uzmq.sock import ZMQ
