@@ -13,19 +13,19 @@ from . import util
 
 class ZMQPoll(object):
     """\
-        :param loop: loop object where this handle runs (accessible
-            through :py:attr:`Poll.loop`).
-        :param int socket: zmq socket
-            to be monitored for readibility or writability.
+    :param loop: loop object where this handle runs (accessible
+        through :py:attr:`Poll.loop`).
+    :param int socket: zmq socket
+        to be monitored for readibility or writability.
 
-        ``ZMQPoll`` ZMQPoll handles can be used to monitor any ZMQ
-        sockets for readability or writability.
+    ``ZMQPoll`` ZMQPoll handles can be used to monitor any ZMQ
+    sockets for readability or writability.
 
-        .. py:attribute:: loop
+    .. py:attribute:: loop
 
-            *Read only*
+        *Read only*
 
-            :py:class:`pyuv.Loop` object where this handle runs.
+        :py:class:`pyuv.Loop` object where this handle runs.
 
     """
 
@@ -57,17 +57,17 @@ class ZMQPoll(object):
 
     def start(self, events, callback):
         """\
-            :param events: int
-                Mask of events that will be detected. The possible
-                events are `pyuv.UV_READABLE` or `pyuv.UV_WRITABLE`.
+        :param events: int
+            Mask of events that will be detected. The possible
+            events are `pyuv.UV_READABLE` or `pyuv.UV_WRITABLE`.
 
-            :param callback: callable
-                Function that will be called when the ``Poll`` handle
-                receives events.
+        :param callback: callable
+            Function that will be called when the ``Poll`` handle
+            receives events.
 
-            Callback signature: ``callback(poll_handle, events, errorno)``.
+        Callback signature: ``callback(poll_handle, events, errorno)``.
 
-            Start or update the event mask of the ``ZMQPoll`` handle.
+        Start or update the event mask of the ``ZMQPoll`` handle.
         """
         if not util.is_callable(callback):
             raise TypeError("a callable is required")
