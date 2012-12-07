@@ -8,7 +8,6 @@ ZMQPoll: ZMQ Poll handle
 """
 import pyuv
 import zmq
-from zmq.core.poll import Poller
 
 from . import util
 
@@ -36,7 +35,7 @@ class ZMQPoll(object):
 
         # initialize private variable
         self._timer_h = pyuv.Timer(loop)
-        self._poller = Poller()
+        self._poller = zmq.Poller()
         self._callback = None
         self._started = False
 
