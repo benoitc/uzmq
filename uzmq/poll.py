@@ -54,7 +54,7 @@ class ZMQPoll(object):
             Indicates if this handle is closing or already closed."""
         return self._timer_h.closed
 
-    def start(self, events, callback, timeout=None):
+    def start(self, events, callback, timeout=-1):
         """\
         :param events: int
             Mask of events that will be detected. The possible
@@ -64,6 +64,9 @@ class ZMQPoll(object):
             Function that will be called when the ``Poll`` handle
             receives events.
 
+        :param timeout: int
+            Timeoout between each poll.
+
         Callback signature: ``callback(poll_handle, events, errorno)``.
 
         Start or update the event mask of the ``ZMQPoll`` handle.
@@ -71,7 +74,7 @@ class ZMQPoll(object):
         if not util.is_callable(callback):
             raise TypeError("a callable is required")
 
-        if timeout is None:
+        if timeout is None or timeout<0:
             timeout = 0.01
 
         self._callback = callback
