@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+- 2012/12/07 - version 0.3.1
+----------------------------
+
+- import zmq.Poller instead of zmq.core.Poller (fix readthedocs build)
+
 2012/12/07 - version 0.3.0
 --------------------------
 
