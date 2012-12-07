@@ -37,7 +37,13 @@ class ZMQ(object):
         self.setsockopt_unicode = self.socket.setsockopt_unicode
         self.getsockopt_unicode = self.socket.getsockopt_unicode
 
-        self._poll = ZMQPoll(loop, socket)
+        self.fd = socket.getsockopt(zmq.FD)
+        self._poll = pyuv.Poll(loop, self.fd)
+        self._poll.start(pyuv.UV_READABLE, self._on_events)
+
+        self._prepare_h = pyuv.Prepare(loop)
+        self._waker = pyuv.Idle(self.loop)
+
         self._events = 0
 
         self._send_queue = deque()
@@ -71,15 +77,11 @@ class ZMQ(object):
         self._read_copy = copy
         self._read_track = track
 
-        if not self._events & pyuv.UV_READABLE:
-            self._events |= pyuv.UV_READABLE
-            self._poll.start(self._events, self._on_events)
-
+        self._prepare()
 
     def stop_read(self):
         """ Stop reading data from the remote endpoint. """
         self._events = self._events & (~pyuv.UV_READABLE)
-        self._poll.start(self._events, self._on_events)
 
     def write(self, msg, flags=0, copy=True, track=False,
             callback=None):
@@ -127,19 +129,19 @@ class ZMQ(object):
         kwargs = dict(flags=flags, copy=copy, track=track)
         self._send_queue.append((msg, kwargs, callback))
 
-        if not self._events & pyuv.UV_WRITABLE:
-            self._events |= pyuv.UV_WRITABLE
-            self._poll.start(self._events, self._on_events)
-
     def stop(self):
         """ Stop the ZMQ handle """
         self._poll.stop()
+        self._prepare_h.stop()
+        self._waker.stop()
 
     def close(self):
         """Close the ZMQ handle. After a handle has been closed no other
         operations can be performed on it."""
 
         self._poll.close()
+        self._prepare_h.close()
+        self._waker.close()
 
     def flush(self):
         """Flush pending messages.
@@ -157,6 +159,7 @@ class ZMQ(object):
     def _send(self):
         res = self._send_queue.popleft()
         msg, kwargs, cb = res
+        kwargs['flags'] = zmq.NOBLOCK | kwargs['flags']
         try:
             status = self.socket.send_multipart(msg, **kwargs)
         except zmq.ZMQError as e:
@@ -166,11 +169,31 @@ class ZMQ(object):
         if util.is_callable(cb):
             cb(self, msg, status)
 
-    def _on_events(self, handle, events, err):
-        if events & pyuv.UV_READABLE:
+    def _prepare_cb(self, handle):
+        handle.stop()
+
+        z_events = self.socket.getsockopt(zmq.EVENTS)
+
+        if z_events & zmq.POLLIN:
             self._on_read()
 
-        if events & pyuv.UV_WRITABLE:
+        if z_events & zmq.POLLOUT:
+            self._on_write()
+
+    def _prepare(self):
+        if self._prepare_h.active:
+            return
+
+        self._prepare_h.start(self._prepare_cb)
+        self._waker.start(lambda h: h.stop())
+
+    def _on_events(self, handle, events, err):
+        z_events = self.socket.getsockopt(zmq.EVENTS)
+
+        if z_events & zmq.POLLIN:
+            self._on_read()
+
+        if z_events & zmq.POLLOUT:
             self._on_write()
 
     def _on_read(self):
@@ -190,8 +213,12 @@ class ZMQ(object):
         else:
             self._read_cb(self, msg, None)
 
+        self._prepare()
+
     def _on_write(self):
         try:
             self._send()
         except IndexError:
-            pass
+            return
+
+        self._prepare()

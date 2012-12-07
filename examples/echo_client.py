@@ -28,6 +28,7 @@ def req_handler(handle, events, errors):
 
     if events &  pyuv.UV_READABLE:
         msg = s.recv()
+        print(msg)
 
 poll = uzmq.ZMQPoll(loop, s)
 poll.start(pyuv.UV_READABLE | pyuv.UV_WRITABLE, req_handler)

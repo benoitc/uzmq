@@ -8,6 +8,7 @@ ZMQPoll: ZMQ Poll handle
 """
 import pyuv
 import zmq
+from zmq.core.poll import Poller
 
 from . import util
 
@@ -34,28 +35,26 @@ class ZMQPoll(object):
         self.socket = socket
 
         # initialize private variable
-        self.fd = socket.getsockopt(zmq.FD)
-        self._poller = pyuv.Poll(loop, self.fd)
-
+        self._timer_h = pyuv.Timer(loop)
+        self._poller = Poller()
         self._callback = None
         self._started = False
-        self._events = 0
 
     @property
     def active(self):
         """*Read only*
 
             Indicates if this handle is active."""
-        return self._poller.active
+        return self._timer_h.active
 
     @property
     def closed(self):
         """*Read only*
 
             Indicates if this handle is closing or already closed."""
-        return self._poller.closed
+        return self._timer_h.closed
 
-    def start(self, events, callback):
+    def start(self, events, callback, timeout=None):
         """\
         :param events: int
             Mask of events that will be detected. The possible
@@ -72,15 +71,32 @@ class ZMQPoll(object):
         if not util.is_callable(callback):
             raise TypeError("a callable is required")
 
-        self._callback = callback
-        self._events = events
+        if timeout is None:
+            timeout = 0.01
 
-        evs = pyuv.UV_READABLE | pyuv.UV_WRITABLE
-        self._poller.start(evs, self._poll)
+        self._callback = callback
+
+        z_events = 0
+        if events & pyuv.UV_READABLE:
+            z_events |= zmq.POLLIN
+
+        if events & pyuv.UV_WRITABLE:
+            z_events |= zmq.POLLOUT
+
+
+        if self._timer_h.active:
+            self._timer.stop()
+            self._poller.modify(self.socket, z_events)
+        else:
+            self._poller.register(self.socket, z_events)
+
+        self._timer_h.start(self._on_timeout, timeout, timeout)
+
 
     def stop(self):
         """ Stop the ``Poll`` handle. """
-        self._poller.stop()
+        self._timer_h.stop()
+        self._poller.unregister(self.socket)
 
     def close(self, callback=None):
         """
@@ -90,23 +106,26 @@ class ZMQPoll(object):
         Close the ``ZMQPoll`` handle. After a handle has been closed no other
         operations can be performed on it.
         """
-        self._poller.close()
+        self._timer_h.close()
+        self._poller.unregister(self.socket)
+
         if util.is_callable(callback):
             callback(self)
 
-    def _poll(self, handle, evs, errno):
+    def _on_timeout(self, handle):
         # trick to use the last state. Fix a race condition
-        z_events = self.socket.getsockopt(zmq.EVENTS)
 
+        errno = 0
+        z_events = self._poller.poll(0)
         if not z_events:
             return
 
-        events = 0
-        if z_events & zmq.POLLIN:
-            events |= pyuv.UV_READABLE
+        for fd, evt in z_events:
+            events = 0
+            if evt & zmq.POLLIN:
+                events |= pyuv.UV_READABLE
 
-        if z_events & zmq.POLLOUT:
-            events |= pyuv.UV_WRITABLE
+            if evt & zmq.POLLOUT:
+                events |= pyuv.UV_WRITABLE
 
-        if events & self._events:
             self._callback(self, events, errno)
