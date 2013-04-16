@@ -17,7 +17,7 @@ class ZMQ(object):
             through :py:attr:`Poll.loop`).
         :param int socket: zmq socket
 
-        The ZMQ handles provides qsynchronous ZMQ sockets functionnality
+        The ZMQ handles provides asynchronous ZMQ sockets functionnality
         both for bound and connected sockets.
     """
 
